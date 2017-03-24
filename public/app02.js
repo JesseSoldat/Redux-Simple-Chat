@@ -2,15 +2,15 @@ function createStore(reducer, initialState) {
 	let state = initialState;
 	const listeners = [];
 
-	const subscribe = (listener) => {
+	const subscribe = (listener) => (
 		listeners.push(listener)
-	};
+	);
 
 	const getState = () => (state);
 
 	const dispatch = (action) => {
 		state = reducer(state, action);
-		listeners.foreEach(l => l());
+		listeners.forEach(l => l());
 	};
 
 	return {
@@ -21,7 +21,7 @@ function createStore(reducer, initialState) {
 }
 
 function reducer(state, action) {
-  if (action.type === 'ADD_MESSAGE') {
+	if (action.type === 'ADD_MESSAGE') {
     return {
       messages: state.messages.concat(action.message),
     };
@@ -43,21 +43,32 @@ const initialState = { messages: [] };
 
 const store = createStore(reducer, initialState);
 
-const App = React.createClass({
-	componentDidMount() {
-		store.subscribe(() => this.forceUpdate());
-	},
-	render: function() {
-		const messages = store.getState().messages;
+const listener = () => (
+	console.log(store.getState())
+);
 
-		return (
-			<div className='ui segment'>
-				Hello 
-			</div>
-		)
-	}
-});
+store.subscribe(listener);
 
-ReactDOM.render(
-	<App />,
-	document.getElementById('content'));
+const addMessageAction1 = {
+  type: 'ADD_MESSAGE',
+  message: 'Does this make sense?',
+};
+
+store.dispatch(addMessageAction1);
+
+
+const addMessageAction2 = {
+  type: 'ADD_MESSAGE',
+  message: 'I hope so.',
+};
+
+store.dispatch(addMessageAction2);
+
+
+const deleteMessageAction = {
+  type: 'DELETE_MESSAGE',
+  index: 0,
+};
+
+store.dispatch(deleteMessageAction);
+
